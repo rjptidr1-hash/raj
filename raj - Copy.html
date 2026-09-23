@@ -1,0 +1,3017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Loan Application</title>
+
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: #f3f6fa;
+      color: #1f2937;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .login-container {
+      max-width: 380px;
+      margin: 80px auto;
+      padding: 20px;
+    }
+
+    .login-card, .application-card, .modal-box, .payment-card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .login-card {
+      padding: 30px;
+    }
+
+    .login-card h1, .application-header h1 {
+      text-align: center;
+      color: #0b1f4b;
+      margin-top: 0;
+    }
+
+    .login-card h1 {
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 7px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: #0b1f4b;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .login-button, .submit-button, .success-ok, .pay-button {
+      width: 100%;
+      padding: 13px;
+      border: 0;
+      border-radius: 7px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #0b1f4b;
+      color: #fff;
+    }
+
+    .login-button:hover, .submit-button:hover, .success-ok:hover, .pay-button:hover {
+      background: #132d68;
+    }
+
+    .login-button:disabled, .submit-button:disabled, .pay-button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .login-note {
+      text-align: center;
+      color: #6b7280;
+      font-size: 12px;
+      margin-top: 15px;
+    }
+
+    .application-page {
+      min-height: 100vh;
+      padding: 30px 15px;
+      display: none;
+    }
+
+    .application-container {
+      width: 100%;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .application-card {
+      padding: 30px;
+    }
+
+    .application-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .application-header p {
+      color: #6b7280;
+      margin-top: 8px;
+    }
+
+    .section-title {
+      background: #0b1f4b;
+      color: #fff;
+      padding: 12px 15px;
+      border-radius: 7px;
+      margin: 28px 0 18px;
+      font-size: 17px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .three-column {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      grid-column: 1 / -1;
+    }
+
+    .field-locked {
+      background: #f3f4f6 !important;
+      color: #374151;
+      cursor: pointer !important;
+    }
+
+    .field-locked:focus {
+      outline: 2px solid #0b1f4b;
+    }
+
+    select.field-locked {
+      cursor: pointer !important;
+    }
+
+    .declaration {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+    }
+
+    .declaration-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #0b1f4b;
+      margin-bottom: 15px;
+    }
+
+    .declaration-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 14px 0;
+      line-height: 1.5;
+    }
+
+    .declaration-row input {
+      margin-top: 4px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .declaration-row label {
+      cursor: pointer;
+    }
+
+    .terms-link {
+      color: #0b1f4b;
+      font-weight: bold;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .signature-saved {
+      display: none;
+      margin-top: 15px;
+      padding: 15px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .signature-saved img {
+      max-width: 300px;
+      max-height: 120px;
+      background: #fff;
+      border: 1px solid #ddd;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow: hidden;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+    }
+
+    .modal-header {
+      padding: 18px 20px;
+      background: #0b1f4b;
+      color: #fff;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .modal-content {
+      padding: 20px;
+      max-height: 55vh;
+      overflow-y: auto;
+      line-height: 1.7;
+    }
+
+    .modal-footer {
+      padding: 15px 20px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .modal-button {
+      width: auto;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .cancel-button {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .agree-button {
+      background: #0b1f4b;
+      color: #fff;
+    }
+
+    .signature-box {
+      padding: 20px;
+      text-align: center;
+    }
+
+    #signatureCanvas {
+      width: 100%;
+      max-width: 600px;
+      height: 250px;
+      border: 2px solid #d1d5db;
+      border-radius: 8px;
+      background: #fff;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    .signature-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .success-box {
+      width: 100%;
+      max-width: 450px;
+      padding: 35px;
+      text-align: center;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+    }
+
+    .success-icon {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      background: #dcfce7;
+      color: #16a34a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      font-weight: bold;
+    }
+
+    .success-box h2 {
+      margin: 0 0 10px;
+      color: #0b1f4b;
+    }
+
+    .success-box p {
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    .success-ok {
+      margin-top: 15px;
+    }
+
+    .payment-page {
+      min-height: 100vh;
+      padding: 30px 15px;
+      background: #eef3f8;
+      display: none;
+    }
+
+    .payment-container {
+      width: 100%;
+      max-width: 680px;
+      margin: auto;
+    }
+
+    .payment-card {
+      overflow: hidden;
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: 0 12px 35px rgba(15, 23, 42, 0.12);
+    }
+
+    .payment-header {
+      padding: 28px 20px;
+      background: linear-gradient(135deg, #0b1f4b, #183b82);
+      color: #ffffff;
+      text-align: center;
+    }
+
+    .payment-lock {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.16);
+      font-size: 28px;
+    }
+
+    .payment-header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .payment-header p {
+      margin: 10px 0 0;
+      color: #dbeafe;
+      font-size: 14px;
+    }
+
+    .payment-body {
+      padding: 24px;
+    }
+
+    .payment-success-message {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      padding: 13px;
+      border: 1px solid #bbf7d0;
+      border-radius: 9px;
+      background: #f0fdf4;
+      color: #15803d;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .payment-success-message span {
+      width: 25px;
+      height: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #16a34a;
+      color: #fff;
+    }
+
+    .payment-timer {
+      margin-bottom: 22px;
+      padding: 14px;
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-radius: 9px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .payment-timer strong {
+      margin-left: 5px;
+      font-size: 19px;
+    }
+
+    .payment-timer.warning {
+      border-color: #fecaca;
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    .payment-details {
+      overflow: hidden;
+      margin-bottom: 22px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+    }
+
+    .payment-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 13px 15px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 14px;
+    }
+
+    .payment-row:last-child {
+      border-bottom: 0;
+    }
+
+    .payment-label {
+      color: #6b7280;
+    }
+
+    .payment-value {
+      color: #111827;
+      font-weight: bold;
+      text-align: right;
+      word-break: break-word;
+    }
+
+    .payment-amount {
+      margin: 22px 0 18px;
+      padding: 22px;
+      border: 1px solid #dbeafe;
+      border-radius: 12px;
+      background: #f8fbff;
+      text-align: center;
+    }
+
+    .payment-amount-label {
+      display: block;
+      margin-bottom: 8px;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .payment-amount-value {
+      color: #0b1f4b;
+      font-size: 35px;
+      font-weight: bold;
+    }
+
+    .payment-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 22px 0 16px;
+    }
+
+    .payment-option {
+      padding: 14px 10px;
+      border: 2px solid #dbe3ef;
+      border-radius: 10px;
+      background: #fff;
+      color: #0b1f4b;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .payment-option.active {
+      border-color: #0b1f4b;
+      background: #eef4ff;
+    }
+
+    .payment-option small {
+      display: block;
+      margin-top: 5px;
+      color: #6b7280;
+      font-size: 11px;
+      font-weight: normal;
+    }
+
+    .pay-button {
+      width: 100%;
+      padding: 15px;
+      border: 0;
+      border-radius: 9px;
+      background: #0b1f4b;
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .pay-button:hover {
+      background: #183b82;
+    }
+
+    .pay-button:disabled {
+      background: #64748b;
+      cursor: not-allowed;
+    }
+
+    .payment-qr-section {
+      display: none;
+      margin-top: 20px;
+      padding: 20px 15px;
+      border: 1px solid #dbeafe;
+      border-radius: 12px;
+      background: #f8fbff;
+      text-align: center;
+    }
+
+    .payment-qr-section.show {
+      display: block;
+    }
+
+    .payment-qr-section h3 {
+      margin: 0 0 8px;
+      color: #0b1f4b;
+      font-size: 18px;
+    }
+
+    .payment-qr-section p {
+      margin: 8px 0;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    #upiQrCode {
+      width: 230px;
+      height: 230px;
+      margin: 15px auto;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+    }
+
+    #upiQrCode img, #upiQrCode canvas {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .copy-upi-button {
+      padding: 10px 18px;
+      border: 0;
+      border-radius: 7px;
+      background: #183b82;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .copy-message {
+      min-height: 18px;
+      margin: 10px 0 0;
+      color: #15803d;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .payment-note {
+      margin: 18px 0 0;
+      color: #6b7280;
+      font-size: 12px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+img,
+canvas,
+video {
+  max-width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+  font-size: 16px;
+}
+
+@media screen and (max-width: 700px) {
+  .login-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 25px auto;
+    padding: 12px;
+  }
+
+  .login-card {
+    width: 100%;
+    padding: 20px 16px;
+  }
+
+  .application-page,
+  .payment-page {
+    width: 100%;
+    min-width: 0;
+    padding: 12px 7px;
+  }
+
+  .application-container,
+  .payment-container,
+  .application-card,
+  .payment-card,
+  .payment-body {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .application-card {
+    padding: 15px 10px;
+  }
+
+  .form-grid,
+  .three-column {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .form-group {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    min-width: 0;
+    font-size: 16px;
+  }
+
+  .full-width {
+    grid-column: auto;
+  }
+
+  .section-title {
+    font-size: 15px;
+    line-height: 1.35;
+    padding: 11px 12px;
+    margin: 20px 0 13px;
+  }
+
+  .modal-overlay {
+    padding: 8px;
+  }
+
+  .modal-box {
+    width: 100%;
+    max-width: 100%;
+    max-height: 94vh;
+  }
+
+  .modal-content {
+    max-height: 58vh;
+    padding: 14px;
+    font-size: 14px;
+  }
+
+  .signature-box {
+    width: 100%;
+    padding: 12px 8px;
+  }
+
+  #signatureCanvas {
+    display: block;
+    width: 100%;
+    height: 190px;
+    max-width: 100%;
+  }
+
+  .payment-body {
+    padding: 16px 12px;
+  }
+
+  .payment-header {
+    padding: 22px 12px;
+  }
+
+  .payment-row {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .payment-value {
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+
+  .payment-options {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  #upiQrCode {
+    width: min(230px, 75vw);
+    height: min(230px, 75vw);
+  }
+
+  @media screen and (max-width: 700px) {
+  #websiteGlobalTimer {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+
+    display: block !important;
+    width: calc(100% - 16px) !important;
+    margin: 8px 8px 16px !important;
+    padding: 10px 8px !important;
+
+    text-align: center;
+    white-space: normal;
+    z-index: 10 !important;
+  }
+
+  #loginPage,
+  #applicationPage,
+  #paymentPage {
+    margin-top: 12px;
+  }
+}
+ 
+  </style>
+</head>
+
+<body>
+  <div id="websiteGlobalTimer" style="
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 99999;
+  display: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #0b1f4b;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.18);
+">
+  Session expires in:
+  <strong id="websiteCountdown">10:00</strong>
+</div>
+  <div id="loginPage" class="page active">
+    <div class="login-container">
+      <div class="login-card">
+        <h1>Login Credentials</h1>
+
+        <div class="form-group">
+          <label>Name as per Aadhaar</label>
+          <input type="text" id="loginName" list="savedNames" placeholder="Enter your name as per Aadhaar" autocomplete="off" oninput="autoFillMobileFromName()" />
+          <datalist id="savedNames"></datalist>
+        </div>
+
+        <div class="form-group">
+          <label>Mobile Number</label>
+          <input type="tel" id="loginMobile" list="savedMobiles" maxlength="10" inputmode="numeric" placeholder="Enter mobile number" autocomplete="off" oninput="autoFillNameFromMobile()" />
+          <datalist id="savedMobiles"></datalist>
+        </div>
+
+        <div class="form-group">
+          <label>Password / 6 Digit OTP</label>
+          <input type="password" id="loginOTP" maxlength="6" inputmode="numeric" placeholder="Enter password / 6 digit OTP" />
+        </div>
+
+        <div class="form-group">
+          <label>Select Your Requirements</label>
+          <select id="loginRequirement">
+            <option value="">Loan Product</option>
+            <option value="Home Loan">Home Loan</option>
+            <option value="Mortgage Loan">Mortgage Loan</option>
+            <option value="Personal Loan">Personal Loan</option>
+            <option value="Business Loan">Business Loan</option>
+            <option value="Gold Loan">Gold Loan</option>
+            <option value="Fixed Deposit">Fixed Deposit</option>
+            <option value="SIP">SIP</option>
+          </select>
+        </div>
+
+        <button type="button" class="login-button" id="loginButton" onclick="loginUser()">LOGIN</button>
+
+        <div class="login-note">Enter your details to login.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="applicationPage" class="page application-page">
+    <div class="application-container">
+      <div class="application-card">
+        <div class="application-header">
+          <h1>Loan Application Form</h1>
+          <p>"Please review your details carefully and edit any incorrect information before submitting."</p>
+        </div>
+
+        <div class="section-title">Applicant Information</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Applicant Name</label>
+            <input type="text" id="applicantName" data-field="Applicant Name" placeholder="Applicant Name" readonly />
+          </div>
+
+          <div class="form-group">
+            <label>PAN Number</label>
+            <input type="text" id="applicantPAN" data-field="Applicant PAN Number" placeholder="Enter PAN Number" maxlength="10" style="text-transform: uppercase;" />
+          </div>
+
+          <div class="form-group">
+            <label>Aadhaar Card Number</label>
+            <input type="tel" id="applicantAadhaar" data-field="Applicant Aadhaar Number" placeholder="Enter 12 digit Aadhaar Number" maxlength="12" inputmode="numeric" />
+          </div>
+
+          <div class="form-group">
+            <label>Father's Name</label>
+            <input type="text" id="applicantFatherName" data-field="Applicant Father's Name" placeholder="Father's Name" />
+          </div>
+
+          <div class="form-group">
+            <label>Mother's Name</label>
+            <input type="text" id="applicantMotherName" data-field="Applicant Mother's Name" placeholder="Mother's Name" />
+          </div>
+
+          <div class="form-group">
+            <label>Qualification</label>
+            <input type="text" id="applicantQualification" data-field="Applicant Qualification" placeholder="Qualification" />
+          </div>
+
+          <div class="form-group">
+            <label>Religion</label>
+            <input type="text" id="applicantReligion" data-field="Applicant Religion" placeholder="Religion" />
+          </div>
+
+          <div class="form-group">
+            <label>Sub Caste</label>
+            <select id="applicantSubCaste" data-field="Applicant Sub Caste">
+              <option value="">Select Category</option>
+              <option value="General">General</option>
+              <option value="ST">ST</option>
+              <option value="SC">SC</option>
+              <option value="OBC">OBC</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Contact No.</label>
+            <input type="tel" maxlength="10" id="applicantMobile" data-field="Applicant Contact No." placeholder="Contact Number" />
+          </div>
+
+          <div class="form-group">
+            <label>Email ID</label>
+            <input type="email" id="applicantEmail" data-field="Applicant Email ID" placeholder="Email ID" />
+          </div>
+
+          <div class="form-group full-width">
+            <label>Current Residence Address</label>
+            <textarea id="applicantAddress" data-field="Applicant Current Residence Address" placeholder="Enter current residence address"></textarea>
+          </div>
+        </div>
+
+        <div class="section-title">Co-Applicant Information</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Co-Applicant Name</label>
+            <input type="text" id="coApplicantName" data-field="Co-Applicant Name" placeholder="Co-Applicant Name" />
+          </div>
+
+          <div class="form-group">
+            <label>Co-Applicant PAN Number</label>
+            <input type="text" id="coApplicantPAN" data-field="Co-Applicant PAN Number" placeholder="Enter PAN Number" maxlength="10" style="text-transform: uppercase;" />
+          </div>
+
+          <div class="form-group">
+            <label>Co-Applicant Aadhaar Number</label>
+            <input type="tel" id="coApplicantAadhaar" data-field="Co-Applicant Aadhaar Number" placeholder="Enter 12 digit Aadhaar Number" maxlength="12" inputmode="numeric" />
+          </div>
+
+          <div class="form-group">
+            <label>Father's Name</label>
+            <input type="text" id="coApplicantFatherName" data-field="Co-Applicant Father's Name" placeholder="Father's Name" />
+          </div>
+
+          <div class="form-group">
+            <label>Mother's Name</label>
+            <input type="text" id="coApplicantMotherName" data-field="Co-Applicant Mother's Name" placeholder="Mother's Name" />
+          </div>
+
+          <div class="form-group">
+            <label>Qualification</label>
+            <input type="text" id="coApplicantQualification" data-field="Co-Applicant Qualification" placeholder="Qualification" />
+          </div>
+
+          <div class="form-group">
+            <label>Religion</label>
+            <input type="text" id="coApplicantReligion" data-field="Co-Applicant Religion" placeholder="Religion" />
+          </div>
+
+          <div class="form-group">
+            <label>Sub Caste</label>
+            <select id="coApplicantSubCaste" data-field="Co-Applicant Sub Caste">
+              <option value="">Select Category</option>
+              <option value="General">General</option>
+              <option value="ST">ST</option>
+              <option value="SC">SC</option>
+              <option value="OBC">OBC</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Contact No.</label>
+            <input type="tel" maxlength="10" id="coApplicantMobile" data-field="Co-Applicant Contact No." placeholder="Contact Number" />
+          </div>
+
+          <div class="form-group">
+            <label>Email ID</label>
+            <input type="email" id="coApplicantEmail" data-field="Co-Applicant Email ID" placeholder="Email ID" />
+          </div>
+
+          <div class="form-group full-width">
+            <label>Current Residence Address</label>
+            <textarea id="coApplicantAddress" data-field="Co-Applicant Current Residence Address" placeholder="Enter current residence address"></textarea>
+          </div>
+        </div>
+
+        <div class="section-title">Company / Employment / Business Information</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Applicant Company/Business Name</label>
+            <input type="text" id="companyName" data-field="Applicant Company/Business Name" placeholder="Company/Business Name" />
+          </div>
+
+          <div class="form-group">
+            <label>Official Email ID</label>
+            <input type="email" id="officialEmail" data-field="Official Email ID" placeholder="Official Email ID" />
+          </div>
+
+          <div class="form-group full-width">
+            <label>Company/Business Address</label>
+            <textarea id="companyAddress" data-field="Company/Business Address" placeholder="Company/Business Address"></textarea>
+          </div>
+
+          <div class="three-column">
+            <div class="form-group">
+              <label>ITR</label>
+              <select id="itr" data-field="ITR">
+                <option value="">Select</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>GST</label>
+              <select id="gst" data-field="GST">
+                <option value="">Select</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Form 16</label>
+              <select id="form16" data-field="Form 16">
+                <option value="">Select</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">Loan Information</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Loan Amount</label>
+            <input type="number" id="loanAmount" data-field="Loan Amount" placeholder="Loan Amount" />
+          </div>
+
+          <div class="form-group">
+            <label>Loan Term</label>
+            <input type="text" id="loanTerm" data-field="Loan Term" placeholder="Example: 5 Years" />
+          </div>
+
+          <div class="form-group full-width">
+            <label>Property Address</label>
+            <textarea id="propertyAddress" data-field="Property Address" placeholder="Property Address"></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Any Existing Obligations (EMI)</label>
+            <textarea id="existingLoans" data-field="Existing Loans / EMI" placeholder="Enter existing loan details, if any"></textarea>
+          </div>
+        </div>
+
+        <div class="section-title">Reference 1</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="reference1Name" data-field="Reference 1 Name" placeholder="Reference Name" />
+          </div>
+
+          <div class="form-group">
+            <label>Mobile</label>
+            <input type="tel" id="reference1Mobile" data-field="Reference 1 Contact No." maxlength="10" placeholder="Mobile Number" />
+          </div>
+
+          <div class="form-group full-width">
+            <label>Address</label>
+            <textarea id="reference1Address" data-field="Reference 1 Address" placeholder="Reference Address"></textarea>
+          </div>
+        </div>
+
+        <div class="section-title">Reference 2</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="reference2Name" data-field="Reference 2 Name" placeholder="Reference Name" />
+          </div>
+
+          <div class="form-group">
+            <label>Mobile</label>
+            <input type="tel" id="reference2Mobile" data-field="Reference 2 Contact No." maxlength="10" placeholder="Mobile Number" />
+          </div>
+
+          <div class="form-group full-width">
+            <label>Address</label>
+            <textarea id="reference2Address" data-field="Reference 2 Address" placeholder="Reference Address"></textarea>
+          </div>
+        </div>
+
+        <div class="section-title">Declaration</div>
+        <div class="declaration">
+          <div class="declaration-title">Declaration & Confirmation</div>
+
+          <div class="declaration-row">
+            <input type="checkbox" id="termsCheck" onclick="openTermsPopup()" />
+            <label for="termsCheck" onclick="openTermsPopup(); event.preventDefault();">
+              I Agree to
+              <span class="terms-link" onclick="openTermsPopup(); event.stopPropagation();">Terms & Conditions</span>
+            </label>
+          </div>
+
+          <div class="declaration-row">
+            <input type="checkbox" id="signatureCheck" onclick="openSignaturePopup()" />
+            <label for="signatureCheck" onclick="openSignaturePopup(); event.preventDefault();">
+              I Apply My Digital Signature
+            </label>
+          </div>
+
+          <div class="signature-saved" id="signatureSaved">
+            <strong>Digital Signature Saved</strong>
+            <br><br>
+            <img id="signaturePreview" alt="Digital Signature" />
+          </div>
+        </div>
+
+        <button type="button" class="submit-button" id="submitButton" onclick="submitApplication()">SUBMIT APPLICATION</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="termsModal">
+    <div class="modal-box">
+      <div class="modal-header">Terms & Conditions</div>
+
+<p>-- Scroll Down To AGREE Terms & Conditions :</p>
+
+      <div class="modal-content" id="termsContent" onscroll="checkTermsScroll()">
+      <p>By submitting an application, providing documents/information, making payment of applicable service charges, giving consent electronically or physically, or otherwise availing of our services, the Customer acknowledges that he/she has read, understood and agreed to these Terms and Conditions.</p>
+<p>1.A “Service Provider” and its authorised personnel/representatives providing facilitation, documentation, advisory or support services.</p>
+<p>1.B “Customer” means any individual, proprietor, partnership, company, organisation or other person seeking or availing the Services.</p>
+<p>1.C “Lender” means any bank, NBFC, financial institution, housing finance company or other eligible financing entity to whom the Customer's loan application may be submitted.</p>
+<p>1.D “Insurer” means the insurance company issuing or underwriting an insurance policy.</p>
+<p>1.E “Investment/Financial Product Provider” means the relevant AMC, mutual fund, registrar, bank, deposit-taking institution, or other regulated entity offering the relevant financial product.</p>
+<p>1.F  “Services” means loan assistance, file structuring, documentation support, insurance assistance, investment/deposit facilitation and other services specifically agreed with the Customer.</p>
+<p> 2.A Nature of service : The Service Provider may provide facilitation, documentation, coordination, application support, file structuring, customer assistance and other related services in connection with financial products.</p>
+<p>2.B  The Service Provider shall not be deemed to be the lender, insurer, AMC, bank, NBFC or issuer of any financial product unless expressly authorised and legally permitted to act in such capacity.</p>
+<p>2.C  The final terms of any loan, insurance policy, SIP, mutual fund investment, FD or other financial product shall be governed by the terms issued by the concerned product provider.</p>
+<p>3.A  The Service Provider may assist the Customer in preparing, compiling, structuring and submitting a loan application to one or more prospective lenders.</p>
+<p>3.B  Such assistance may include collection of documents, preliminary assessment, application coordination, communication with the lender, documentation support and status coordination.</p>
+<p>3.C  Submission of an application shall not constitute sanction, approval or commitment of finance.</p>
+<p>4.A  The Customer expressly acknowledges that loan sanction, loan amount, rate of interest, tenure, processing fee, security requirements and disbursement are solely subject to the independent assessment and discretion of the concerned lender.</p>
+<p>4.B  The Service Provider does not guarantee that any loan application shall be sanctioned or disbursed.</p>
+<p>5.A  The Customer understands that the lender may independently verify income, employment/business details, banking transactions, credit history, repayment capacity, existing liabilities, KYC information, collateral/security and other relevant information.</p>
+<p>5.B The Customer authorises the Service Provider, where lawfully permitted and subject to applicable consent requirements, to coordinate such verification and documentation with the concerned lender or authorised service provider.</p>
+<p>5.C  The final credit decision shall remain with the concerned lender.</p>
+<p>6.A  The Customer shall provide complete, accurate, current and genuine information and documents.</p>
+<p>6.B  The Customer shall not knowingly provide forged, fabricated, altered, misleading or materially incomplete documents or information.</p>
+<p>6.C  The Customer shall be solely responsible for the consequences arising from false statements, suppression of material facts, forged documents or inaccurate information supplied by the Customer.</p>
+<p>7.A The Service Provider may assist in arranging documents and structuring the loan/application file in accordance with the information and documents supplied by the Customer.</p>
+<p>7.B  Such assistance shall not amount to certification of the authenticity or legal validity of documents unless expressly stated otherwise.</p>
+<p>7.C  The concerned lender or product provider shall have the right to independently verify and accept or reject any document.</p>
+<p>8.A Where applicable, the Customer shall pay the Service Provider's agreed service, consultancy, documentation, file-processing, coordination or other applicable charges.</p>
+<p>8.B  The applicable charges shall be communicated to the Customer before or at the time of availing the relevant service, wherever practicable.</p>
+<p>8.C  Payment of Service Provider charges shall not be construed as payment towards the lender's processing fee, government fee, insurance premium, investment amount or any other third-party charge unless expressly stated.</p>
+<p>9.A  Where services have already been substantially performed, the Service Provider's service charges may be non-refundable to the extent permitted by applicable law and the agreed service terms.</p>
+<p>9.B  This may include situations where the application is rejected because of the Customer's credit profile, insufficient documents, incorrect information, change of mind, non-cooperation, failure to satisfy lender requirements or any other reason beyond the Service Provider's control.</p>
+<p>9.C  Nothing in this clause shall exclude any refund or remedy that is mandatorily required under applicable law.</p>
+<p>10.A The Customer shall independently bear all applicable charges imposed by banks, NBFCs, insurers, AMCs, mutual fund platforms, deposit-taking institutions, government authorities, credit bureaus, valuation agencies, legal professionals or other third parties.</p>
+<p>10.B The Service Provider shall not be responsible for any change in third-party charges.</p>
+<p>11.A Loan disbursement, if approved, shall be made by the concerned lender in accordance with its internal policies, sanction letter and applicable documentation.</p>
+<p>11.B The Service Provider does not control the lender's disbursement process and shall not be liable for delays caused by the lender, verification agencies, government authorities, technical systems or the Customer.</p>
+<p>12.A  The applicable interest rate, EMI, tenure, penal charges, foreclosure/prepayment conditions, security requirements and other financial terms shall be determined by the concerned lender.</p>
+<p>12.B  The Customer shall carefully read the sanction letter, loan agreement, Key Facts Statement, Most Important Terms and Conditions and other documents issued by the lender before accepting the facility.</p>
+<p>13.A  The Service Provider may assist the Customer in obtaining or processing insurance products through an insurer or authorised insurance intermediary, subject to applicable law and the Service Provider's applicable authorisation/arrangement.</p>
+<p>13.B  The Service Provider does not underwrite or issue the insurance policy unless expressly authorised to do so.</p>
+<p>13.C  The insurer shall be solely responsible for underwriting, acceptance, rejection, policy issuance, exclusions, coverage, premium determination and claim settlement, as applicable.</p>
+<p>14.A  Any insurance claim shall be governed by the terms, conditions, exclusions and provisions of the relevant insurance policy.</p>
+<p>14.B  The Service Provider may provide reasonable coordination or documentation assistance, where agreed, but does not guarantee claim approval or settlement.</p>
+<p>14.C  The final decision regarding any claim shall rest with the concerned insurer in accordance with the policy and applicable law.</p>
+<p>15.A  Where permitted and applicable, the Service Provider may assist the Customer in understanding, processing or coordinating SIP/mutual fund-related services through the relevant authorised/regulated entity.</p>
+<p>15.B The Customer acknowledges that mutual fund investments are subject to market risks and that returns are not guaranteed unless expressly stated by the relevant product provider in accordance with law.</p>
+<p>15.C  The Service Provider shall not guarantee any particular return, appreciation, profit or preservation of capital.</p>
+<p>16.A  Where applicable, the Service Provider may assist the Customer in facilitating or coordinating fixed deposit or other deposit products offered by the relevant bank or authorised institution.</p>
+<p>16.B  The applicable interest rate, tenure, premature withdrawal conditions, taxation, nomination and other terms shall be governed by the concerned institution's deposit terms.</p>
+<p>16.C  The Service Provider does not independently guarantee repayment or interest on any deposit unless it is legally responsible for such obligation.</p>
+<p>17.A  The Customer acknowledges that financial products may involve financial, market, liquidity, interest-rate, credit or other risks depending upon the nature of the product.</p>
+<p>17.B  The Customer shall independently review the product documents and obtain professional advice wherever required before making an investment decision.</p>
+<p>17.C  Past performance, historical returns or illustrations shall not be treated as a guarantee of future performance.</p>
+<p>18.A  The Customer shall make the final decision regarding whether to apply for a loan, purchase insurance, invest through SIP/mutual funds or place funds in an FD/deposit.</p>
+<p>18.B  The Customer shall have the opportunity to review relevant product documents before acceptance, subject to the procedures of the concerned product provider.</p>
+<p>19.A  Any illustration, estimate, eligibility indication, indicative EMI, projected return, premium estimate or other preliminary calculation provided by the Service Provider is for informational/facilitation purposes only unless expressly confirmed in writing by the concerned product provider.</p>
+<p>19.B  The Customer shall not rely upon any preliminary estimate as a guaranteed financial outcome.</p>
+<p>20.A  The Customer authorises the Service Provider, to the extent permitted by applicable law and based on the Customer's consent, to collect, organise, submit and communicate information and documents necessary for providing the requested Services.</p>
+<p>20.B  Such authorisation shall not permit the Service Provider to execute any legally binding document on behalf of the Customer unless separate valid authority has been expressly granted.</p>
+<p>21.A  The Customer shall provide valid KYC documents and other documents reasonably required for processing the requested service.</p>
+<p>21.B  The Service Provider may decline or suspend processing where required KYC/documentation is incomplete, inconsistent, expired, unverifiable or otherwise unacceptable to the concerned institution.</p>
+<p>21.C  The Customer shall promptly provide updated documents whenever required.</p>
+<p>22.A  The Service Provider shall use Customer information for legitimate business purposes connected with the requested Services, including processing, documentation, communication, verification and coordination with relevant service providers, subject to applicable law and consent requirements.</p>
+<p>22.B  Reasonable measures shall be taken to protect Customer information from unauthorised access, use or disclosure.</p>
+<p>22.C  The Customer acknowledges that certain information may necessarily be shared with lenders, insurers, financial institutions, authorised intermediaries, verification agencies, technology/service providers or governmental/regulatory authorities where required or permitted by law.</p>
+<p>23.A  The Customer consents, where applicable and lawful, to receive communications relating to the requested Services through telephone, SMS, e-mail, WhatsApp or other electronic communication channels.</p>
+<p>23.B  The Customer shall ensure that the contact information provided by him/her is accurate and operational.</p>
+<p>23.C  The Customer shall remain responsible for promptly informing the Service Provider of any change in contact details.</p>
+<p>24.A  Electronic records, application acknowledgements, digital submissions, OTP-based confirmations, electronic communications and other legally recognised electronic records may be retained as evidence of the relevant transaction or communication, subject to applicable law.</p>
+<p>24.B  The Customer agrees that electronic records may be used for service administration, audit, compliance and dispute-resolution purposes.</p>
+<p>25.A  The Customer shall promptly respond to requests for documents, clarification, verification, signatures, OTP authentication, KYC and other information reasonably required for processing.</p>
+<p>25.B  Any delay caused by the Customer may result in delay, suspension or closure of the application/service request.</p>
+<p>26  The Service Provider may refuse, suspend or discontinue processing where:</p>
+<p>26 (a) required information or documents are not provided;</p>
+<p>26 (b) information appears materially inconsistent or unverifiable;</p>
+<p>26 (c) the transaction appears suspicious, unlawful or fraudulent;</p>
+<p>26 (d) applicable law or regulatory requirements prohibit continuation; or</p>
+<p>26 (e) continuation of the service may expose the Service Provider or any third party to legal or regulatory risk.</p>
+<p>27.A  The Customer acknowledges that certain parts of the service process may involve banks, NBFCs, insurers, AMCs, financial institutions, credit bureaus, verification agencies, technology providers or other third parties.</p>
+<p>27.B  The Service Provider shall not be responsible for independent acts, omissions, decisions, delays, system failures, policy changes or contractual obligations of such third parties, except to the extent liability is imposed upon the Service Provider under applicable law.</p>
+<p>28.A  To the maximum extent permitted by applicable law, the Service Provider shall not be liable for indirect, consequential, incidental or special losses arising solely from the independent decision or conduct of a lender, insurer, financial institution or other third party.</p>
+<p>28.B  Nothing contained herein shall exclude liability that cannot lawfully be excluded or limited under applicable law.</p>
+<p>29.A  The Service Provider shall not be liable for delay or failure in performance caused by circumstances beyond its reasonable control, including natural disasters, fire, flood, epidemic, governmental restrictions, regulatory changes, war, civil disturbance, cyber incidents, telecommunications failure, banking-system failure, server failure or other events of force majeure.</p>
+<p>29.B  The affected obligations shall be performed as soon as reasonably practicable after the circumstances cease.</p>
+<p>30.A  The Customer shall not use the Services for any unlawful, fraudulent, deceptive or prohibited purpose.</p>
+<p>30.B  Where there is reasonable suspicion of fraud, identity misuse, forged documents, money laundering, misrepresentation or other unlawful activity, the Service Provider may suspend the relevant service and, where legally required or appropriate, report or disclose the matter to the competent authority or concerned institution.</p>
+<p>31.A  The Service Provider may modify these Terms from time to time to reflect changes in law, regulation, technology, business practices or Services.</p>
+<p>31.B  The updated Terms shall apply prospectively to new or continuing Services, subject to applicable law and any contractual rights already accrued to the Customer.</p>
+<p>32.A  Any complaint relating to the services may first be submitted directly to the Service Provider through the designated communication channel.</p>
+<p>32.B  The Customer should provide relevant application details, date of transaction, nature of complaint and supporting documents so that the matter can be reviewed.</p>
+<p>32.C  Complaints relating exclusively to the independent decision of a bank, NBFC, insurer, AMC or other product provider may also need to be raised with the concerned institution through its prescribed grievance mechanism.</p>
+<p>33.A  These Terms shall be governed by and construed in accordance with the laws applicable in India.</p>
+<p>33.B  Nothing contained herein shall prevent a Customer from exercising any mandatory statutory or regulatory right available under applicable law.</p>
+<p>34.A  Subject to applicable law and any mandatory statutory dispute-resolution mechanism, disputes arising directly between the Customer and Service Provider in relation to the Services shall be subject to the jurisdiction of the competent courts at Ratlam, Madhya Pradesh, India.</p>
+<p>34.B  The parties may, by mutual agreement, attempt to resolve any dispute amicably before initiating formal legal proceedings.</p>
+<p>35   By signing physically, electronically accepting these Terms, submitting an application, making payment for the Services or otherwise proceeding with the requested Services, the Customer confirms that:</p>
+<p>(a) the Customer has read and understood these Terms and Conditions;</p>
+<p>(b) the information and documents supplied by the Customer are true and accurate to the best of the Customer's knowledge;</p>
+<p>(c) the Customer understands that loan sanction/disbursement is subject to the independent decision of the concerned lender;</p>
+<p>(d) insurance issuance and claim settlement are subject to the relevant insurer's policy terms;</p>
+<p>(e) SIP/mutual fund investments are subject to applicable investment risks and product terms;</p>
+<p>(f) FD/deposit products are subject to the terms of the concerned institution;</p>
+<p>(g) the Customer has not been promised any guaranteed loan sanction, guaranteed investment return, guaranteed insurance claim settlement or other financial outcome unless expressly provided by the relevant regulated product provider in accordance with law; and</p>
+<p>(h) the Customer agrees to be bound by these Terms and Conditions.</p>
+<p>I/We have carefully read, understood and accepted the above Terms & Conditions and voluntarily agree to avail the selected Services. </p>
+
+    </div>
+
+      <div class="modal-footer">
+        <button type="button" class="modal-button cancel-button" onclick="cancelTerms()">CANCEL</button>
+        <button type="button" class="modal-button agree-button" id="agreeTermsButton" onclick="agreeTerms()" disabled>AGREE</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="signatureModal">
+    <div class="modal-box">
+      <div class="modal-header">Digital Signature</div>
+
+      <div class="signature-box">
+        <p>Please draw your signature in the box below.</p>
+        <canvas id="signatureCanvas" width="600" height="250"></canvas>
+
+        <div class="signature-buttons">
+          <button type="button" class="modal-button cancel-button" onclick="clearSignature()">CLEAR</button>
+          <button type="button" class="modal-button cancel-button" onclick="cancelSignature()">CANCEL</button>
+          <button type="button" class="modal-button agree-button" onclick="saveSignature()">SAVE SIGNED</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="successModal">
+    <div class="success-box">
+      <div class="success-icon">✓</div>
+      <h2>Successfully Submitted</h2>
+      <p>Your application has been successfully submitted.</p>
+      <p>Click OK to continue to the payment page.</p>
+      <button type="button" class="success-ok" onclick="goToPaymentPage()">OK</button>
+    </div>
+  </div>
+
+  <div id="paymentPage" class="page payment-page">
+    <div class="payment-container">
+      <div class="payment-card">
+        <div class="payment-header">
+          <div class="payment-lock">🔒</div>
+          <h1>Secure Payment</h1>
+          <p>Complete your application payment securely</p>
+        </div>
+
+        <div class="payment-body">
+          <div class="payment-success-message">
+            <span>✓</span>
+            Application submitted successfully
+          </div>
+
+          <div class="payment-timer" id="paymentTimerBox">
+            ⏳ Payment session expires in:
+            <strong id="countdown">02:00</strong>
+          </div>
+
+          <h2>Application Details</h2>
+
+          <div class="payment-details">
+            <div class="payment-row">
+              <span class="payment-label">Applicant Name</span>
+              <span class="payment-value" id="mergedPaymentName">-</span>
+            </div>
+
+            <div class="payment-row">
+              <span class="payment-label">Mobile Number</span>
+              <span class="payment-value" id="mergedPaymentMobile">-</span>
+            </div>
+
+            <div class="payment-row">
+              <span class="payment-label">Application Status</span>
+              <span class="payment-value">Submitted</span>
+            </div>
+
+            <div class="payment-row">
+              <span class="payment-label">Payment Status</span>
+              <span class="payment-value">Pending</span>
+            </div>
+          </div>
+
+          <div class="payment-amount">
+            <span class="payment-amount-label">Total Payable Amount</span>
+            <div class="payment-amount-value" id="paymentAmountValue">₹0</div>
+          </div>
+
+          <div class="payment-options">
+            <button type="button" class="payment-option active" id="mergedUpiOption">
+              PAY THROUGH UPI
+            </button>
+
+            <button type="button" class="payment-option" id="mergedQrOption">
+              PAY THROUGH QR
+            </button>
+          </div>
+
+          <button type="button" class="pay-button" id="mergedPayButton">
+            PAY NOW
+          </button>
+
+          <div class="payment-qr-section" id="mergedQrSection">
+            <h3>Scan and Pay</h3>
+            <p>Please scan the QR code given below using your UPI app.</p>
+
+            <div id="upiQrCode"></div>
+
+            <button type="button" class="copy-upi-button" id="mergedCopyButton">
+              COPY UPI ID
+            </button>
+
+            <p class="copy-message" id="mergedCopyMessage" aria-live="polite"></p>
+          </div>
+
+          <p class="payment-note">
+            After completing your payment, please check your UPI app to verify the transaction status. The website does not confirm payments automatically.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyakqP2qx5aAxEup3Y2-v0JR0RY8f3uHVQQpAh8nyrEYCrOL5L6JF1xb1c_cnVMr7dt/exec";
+    const LOGIN_HISTORY_KEY = "patel_associates_login_history";
+    const PAYMENT_STATUS_API_URL = GOOGLE_SCRIPT_URL;
+    const PAYMENT_STATUS_POLL_TIME = 1000; // Payment polling unchanged
+const PAYMENT_TERMINAL_KEY = "payment_terminal_state";
+const EXPIRY_STORAGE_KEY = "secure_payment_expiry_time";
+
+// Whole website timer
+const WEBSITE_EXPIRY_KEY = "whole_website_expiry_time";
+const WEBSITE_SESSION_DURATION = 10 * 60 * 1000; // 10 minutes
+
+    const APPLICATION_FIELD_IDS = [
+      "applicantName","applicantPAN","applicantAadhaar","applicantFatherName","applicantMotherName",
+      "applicantQualification","applicantReligion","applicantSubCaste","applicantMobile","applicantEmail",
+      "applicantAddress","coApplicantName","coApplicantPAN","coApplicantAadhaar","coApplicantFatherName",
+      "coApplicantMotherName","coApplicantQualification","coApplicantReligion","coApplicantSubCaste",
+      "coApplicantMobile","coApplicantEmail","coApplicantAddress","companyName","officialEmail","companyAddress",
+      "itr","gst","form16","loanAmount","loanTerm","propertyAddress","existingLoans","reference1Name",
+      "reference1Mobile","reference1Address","reference2Name","reference2Mobile","reference2Address"
+    ];
+
+    const state = {
+      applicationLoaded: false,
+      currentApplicationRow: "",
+      currentlyUnlockedField: "",
+      pollingTimer: null,
+      signatureCanvas: null,
+      signatureContext: null,
+      drawing: false,
+      editPopupOpen: false,
+      approvedEditField: "",
+      editedFields: new Set()
+    };
+
+    let websiteTimer = null;
+let websiteExpired = false;
+let paymentStatusPollingTimer = null;
+let paymentFinalized = false;
+    
+
+    const $ = (id) => document.getElementById(id);
+
+    function saveFinalPageState(status) {
+      /*
+       * Sirf current browser tab/session ke liye save hoga.
+       * Refresh/back/forward ke baad bhi white page rahega.
+       * Browser/tab close karne ke baad sessionStorage reset ho jayega.
+       */
+      sessionStorage.setItem(PAYMENT_TERMINAL_KEY, status);
+    }
+
+    function getFinalPageState() {
+      return sessionStorage.getItem(PAYMENT_TERMINAL_KEY) || "";
+    }
+
+    function hasFinalPageState() {
+      const finalState = getFinalPageState();
+
+      return (
+        finalState === "SUCCESS" ||
+        finalState === "DECLINED" ||
+        finalState === "EXPIRED"
+      );
+    }
+
+    function showPage(pageId) {
+      document.querySelectorAll(".page").forEach((page) => page.classList.remove("active"));
+      const page = $(pageId);
+      if (page) page.classList.add("active");
+    }
+
+    function getLoginHistory() {
+      try {
+        return JSON.parse(localStorage.getItem(LOGIN_HISTORY_KEY) || "[]");
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function loadLoginSuggestions() {
+      const history = getLoginHistory();
+      const nameList = $("savedNames");
+      const mobileList = $("savedMobiles");
+
+      if (!nameList || !mobileList) return;
+
+      nameList.innerHTML = "";
+      mobileList.innerHTML = "";
+
+      history.forEach((item) => {
+        if (item.name) {
+          const option = document.createElement("option");
+          option.value = item.name;
+          nameList.appendChild(option);
+        }
+        if (item.mobile) {
+          const option = document.createElement("option");
+          option.value = item.mobile;
+          mobileList.appendChild(option);
+        }
+      });
+    }
+
+    function saveLoginSuggestion(name, mobile, loanProduct) {
+      const history = getLoginHistory();
+      const found = history.find((item) => String(item.mobile) === String(mobile));
+
+      if (found) {
+        found.name = name;
+        found.loanProduct = loanProduct;
+      } else {
+        history.unshift({ name, mobile, loanProduct });
+      }
+
+      localStorage.setItem(LOGIN_HISTORY_KEY, JSON.stringify(history.slice(0, 10)));
+      loadLoginSuggestions();
+    }
+
+    function autoFillMobileFromName() {
+      const name = $("loginName").value.trim();
+      if (!name) return;
+
+      const found = getLoginHistory().find((item) =>
+        String(item.name).toLowerCase() === name.toLowerCase()
+      );
+
+      if (!found) return;
+
+      $("loginMobile").value = found.mobile;
+
+      if (found.loanProduct) {
+        $("loginRequirement").value = found.loanProduct;
+      }
+    }
+
+    function autoFillNameFromMobile() {
+      const mobile = $("loginMobile").value.trim();
+      if (!mobile) return;
+
+      const found = getLoginHistory().find((item) => String(item.mobile) === mobile);
+
+      if (!found) return;
+
+      $("loginName").value = found.name;
+
+      if (found.loanProduct) {
+        $("loginRequirement").value = found.loanProduct;
+      }
+    }
+function formatWebsiteTime(totalSeconds) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+function getWebsiteExpiryTime() {
+  let expiryTime = sessionStorage.getItem(WEBSITE_EXPIRY_KEY);
+
+  if (!expiryTime) {
+    expiryTime = String(Date.now() + WEBSITE_SESSION_DURATION);
+    sessionStorage.setItem(WEBSITE_EXPIRY_KEY, expiryTime);
+  }
+
+  return Number(expiryTime);
+}
+
+function startWebsiteTimer() {
+  const timerBox = document.getElementById("websiteGlobalTimer");
+  const countdown = document.getElementById("websiteCountdown");
+
+  if (!timerBox || !countdown) return;
+
+  const expiryTime = getWebsiteExpiryTime();
+
+  timerBox.style.display = "block";
+
+  if (websiteTimer) {
+    clearInterval(websiteTimer);
+  }
+
+  function updateWebsiteTimer() {
+    if (websiteExpired) return;
+
+    const remainingSeconds = Math.max(0, Math.ceil((expiryTime - Date.now()) / 1000));
+    countdown.textContent = formatWebsiteTime(remainingSeconds);
+
+    if (remainingSeconds <= 30 && remainingSeconds > 0) {
+      timerBox.style.background = "#dc2626";
+    }
+
+    if (remainingSeconds <= 0) {
+      clearInterval(websiteTimer);
+      websiteTimer = null;
+      expireWholeWebsite();
+    }
+  }
+
+  updateWebsiteTimer();
+  websiteTimer = setInterval(updateWebsiteTimer, 1000);
+}
+
+function showExpiredWebsitePage() {
+  document.documentElement.innerHTML = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Link Expired</title>
+      <style>
+        html, body {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+          background: #ffffff;
+        }
+      </style>
+    </head>
+    <body></body>
+    </html>
+  `;
+
+  history.replaceState({ expiredWebsite: true }, "", window.location.href);
+
+  window.onpopstate = function () {
+    history.replaceState({ expiredWebsite: true }, "", window.location.href);
+    showExpiredWebsitePage();
+  };
+
+  window.onpageshow = function () {
+    showExpiredWebsitePage();
+  };
+}
+
+function expireWholeWebsite() {
+  if (websiteExpired) return;
+
+  websiteExpired = true;
+
+  if (websiteTimer) {
+    clearInterval(websiteTimer);
+    websiteTimer = null;
+  }
+
+  if (paymentStatusPollingTimer) {
+    clearInterval(paymentStatusPollingTimer);
+    paymentStatusPollingTimer = null;
+  }
+
+  if (state.pollingTimer) {
+    clearInterval(state.pollingTimer);
+    state.pollingTimer = null;
+  }
+
+  sessionStorage.setItem(PAYMENT_TERMINAL_KEY, "EXPIRED");
+
+  showPaymentPopup(
+    "Link Expired",
+    "Your session has expired. Please open a new link and try again.",
+    "declined"
+  );
+
+  setTimeout(() => {
+    showExpiredWebsitePage();
+  }, 2200);
+}
+    async function loginUser() {
+      const name = $("loginName").value.trim();
+      const mobile = $("loginMobile").value.trim();
+      const otp = $("loginOTP").value.trim();
+      const loanProduct = $("loginRequirement").value.trim();
+      const loginButton = $("loginButton");
+
+      if (!name) { alert("Please enter your name."); return; }
+      if (!/^[0-9]{10}$/.test(mobile)) { alert("Please enter a valid 10 digit mobile number."); return; }
+      if (!/^[0-9]{6}$/.test(otp)) { alert("Please enter the correct 6 digit OTP / Password."); return; }
+      if (!loanProduct) { alert("Please select Loan Product."); return; }
+
+      loginButton.disabled = true;
+      loginButton.innerText = "VERIFYING...";
+
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "verify",
+            name, mobile, otp, requirement: loanProduct
+          })
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+          alert(result.message || "Login failed.");
+          return;
+        }
+
+        sessionStorage.setItem("customerName", result.name);
+        sessionStorage.setItem("customerMobile", result.mobile);
+        sessionStorage.setItem("loanProduct", result.loanProduct);
+
+        saveLoginSuggestion(result.name, result.mobile, result.loanProduct);
+
+        showPage("applicationPage");
+        $("applicantName").value = result.name;
+        $("applicantMobile").value = result.mobile;
+
+        lockAllApplicationFields();
+        await loadCustomerApplication();
+        startApplicationPolling();
+
+      } catch (error) {
+        console.error("LOGIN ERROR:", error);
+      } finally {
+        loginButton.disabled = false;
+        loginButton.innerText = "LOGIN";
+      }
+    }
+
+    async function loadCustomerApplication() {
+      const name = sessionStorage.getItem("customerName") || "";
+      const mobile = sessionStorage.getItem("customerMobile") || "";
+
+      if (!name || !mobile) return;
+
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          cache: "no-store",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify({
+            action: "getApplication",
+            name,
+            mobile,
+            timestamp: Date.now()
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success && result.found && result.fields) {
+          state.applicationLoaded = true;
+          state.currentApplicationRow = result.row || "";
+          fillApplicationFields(result.fields);
+        } else {
+          console.warn("Application not found:", result.message || result);
+        }
+      } catch (error) {
+        console.error("APPLICATION LOAD ERROR:", error);
+      }
+    }
+
+    function startApplicationPolling() {
+      if (state.pollingTimer) {
+        clearInterval(state.pollingTimer);
+      }
+
+      state.pollingTimer = setInterval(function () {
+        const applicationPage = $("applicationPage");
+        if (applicationPage && applicationPage.classList.contains("active")) {
+          loadCustomerApplication();
+        }
+      }, 100000);
+    }
+
+    function fillApplicationFields(fields) {
+      APPLICATION_FIELD_IDS.forEach((fieldId) => {
+        const element = $(fieldId);
+        if (!element) return;
+
+        if (state.editedFields.has(fieldId)) return;
+
+        if (Object.prototype.hasOwnProperty.call(fields, fieldId)) {
+          element.value = String(fields[fieldId] ?? "");
+        }
+        lockField(element);
+      });
+    }
+
+    function lockField(element) {
+      if (!element) return;
+
+      element.classList.add("field-locked");
+      element.dataset.locked = "true";
+
+      if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
+        element.setAttribute("readonly", "readonly");
+      }
+    }
+
+    function unlockField(element) {
+      if (!element) return;
+
+      element.classList.remove("field-locked");
+      element.dataset.locked = "false";
+
+      if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
+        element.removeAttribute("readonly");
+      }
+
+      state.currentlyUnlockedField = element.id;
+      state.approvedEditField = element.id;
+      state.editedFields.add(element.id);
+
+      setTimeout(() => element.focus(), 50);
+    }
+
+    function getFieldName(element) {
+      const parent = element.closest(".form-group");
+      if (!parent) return "Selected Field";
+
+      const label = parent.querySelector("label");
+      return label ? label.innerText.trim() : "Selected Field";
+    }
+
+    function askToEditField(element) {
+      if (!element) return;
+      if (element.dataset.locked !== "true") return;
+      if (state.editPopupOpen) return;
+
+      state.editPopupOpen = true;
+
+      const answer = confirm(
+        "This field is locked.\n\n" +
+        "Field: " + getFieldName(element) + "\n\n" +
+        "Do you want to edit this field?"
+      );
+
+      state.editPopupOpen = false;
+
+      if (answer) unlockField(element);
+    }
+
+    function lockAllApplicationFields() {
+      APPLICATION_FIELD_IDS.forEach((fieldId) => {
+        const element = $(fieldId);
+        if (element) lockField(element);
+      });
+    }
+
+    function setupFieldEvents() {
+      APPLICATION_FIELD_IDS.forEach((fieldId) => {
+        const element = $(fieldId);
+        if (!element) return;
+
+        lockField(element);
+
+        element.addEventListener("click", () => {
+          if (element.dataset.locked === "true") askToEditField(element);
+        });
+
+        element.addEventListener("focus", () => {
+          if (element.dataset.locked === "false" && state.approvedEditField === element.id) {
+            return;
+          }
+
+          if (element.dataset.locked === "true" && !state.editPopupOpen) {
+            element.blur();
+            askToEditField(element);
+          }
+        });
+
+        element.addEventListener("input", () => {
+          if (element.dataset.locked === "false") {
+            state.editedFields.add(element.id);
+          }
+        });
+
+        element.addEventListener("change", () => {
+          if (element.dataset.locked === "false") {
+            state.editedFields.add(element.id);
+            lockField(element);
+          }
+        });
+
+        element.addEventListener("blur", () => {
+          if (element.dataset.locked === "false" && (element.tagName === "INPUT" || element.tagName === "TEXTAREA")) {
+            state.editedFields.add(element.id);
+            lockField(element);
+          }
+        });
+      });
+    }
+
+    function openTermsPopup() {
+      $("termsModal").classList.add("show");
+      const content = $("termsContent");
+      content.scrollTop = 0;
+      $("agreeTermsButton").disabled = true;
+    }
+
+    function checkTermsScroll() {
+      const content = $("termsContent");
+      const button = $("agreeTermsButton");
+      if (content.scrollTop + content.clientHeight >= content.scrollHeight - 10) {
+        button.disabled = false;
+      }
+    }
+
+    function agreeTerms() {
+      if ($("agreeTermsButton").disabled) return;
+      $("termsCheck").checked = true;
+      $("termsModal").classList.remove("show");
+    }
+
+    function cancelTerms() {
+      $("termsCheck").checked = false;
+      $("termsModal").classList.remove("show");
+    }
+
+    function setupSignatureCanvas() {
+  const canvas = $("signatureCanvas");
+
+  if (!canvas) {
+    console.error("Signature canvas नहीं मिला.");
+    return;
+  }
+
+  state.signatureCanvas = canvas;
+  state.signatureContext = canvas.getContext("2d");
+
+  if (!state.signatureContext) {
+    console.error("Canvas context नहीं मिला.");
+    return;
+  }
+
+  state.signatureContext.lineWidth = 2;
+  state.signatureContext.lineCap = "round";
+  state.signatureContext.lineJoin = "round";
+  state.signatureContext.strokeStyle = "#111827";
+}
+
+function openSignaturePopup() {
+  const modal = $("signatureModal");
+
+  if (!modal) {
+    console.error("Signature modal नहीं मिला.");
+    return;
+  }
+
+  modal.classList.add("show");
+
+  setTimeout(() => {
+    setupSignatureCanvas();
+  }, 50);
+}
+
+function getSignaturePosition(event) {
+  if (!state.signatureCanvas) {
+    return { x: 0, y: 0 };
+  }
+
+  const rect = state.signatureCanvas.getBoundingClientRect();
+
+  return {
+    x: (event.clientX - rect.left) *
+      (state.signatureCanvas.width / rect.width),
+
+    y: (event.clientY - rect.top) *
+      (state.signatureCanvas.height / rect.height)
+  };
+}
+
+
+function startSignature(event) {
+  if (!state.signatureCanvas || !state.signatureContext) {
+    setupSignatureCanvas();
+  }
+
+  if (!state.signatureCanvas || !state.signatureContext) {
+    return;
+  }
+
+  event.preventDefault();
+
+  state.drawing = true;
+
+  const position = getSignaturePosition(event);
+
+  state.signatureContext.beginPath();
+  state.signatureContext.moveTo(position.x, position.y);
+}
+
+function drawSignature(event) {
+  if (!state.drawing || !state.signatureContext) {
+    return;
+  }
+
+  event.preventDefault();
+
+  const position = getSignaturePosition(event);
+
+  state.signatureContext.lineTo(position.x, position.y);
+  state.signatureContext.stroke();
+}
+
+function stopSignature() {
+  state.drawing = false;
+}
+
+function clearSignature() {
+  if (!state.signatureCanvas || !state.signatureContext) {
+    setupSignatureCanvas();
+  }
+
+  if (!state.signatureCanvas || !state.signatureContext) {
+    return;
+  }
+
+  state.signatureContext.clearRect(
+    0,
+    0,
+    state.signatureCanvas.width,
+    state.signatureCanvas.height
+  );
+}
+
+function getSignatureData() {
+  if (!state.signatureCanvas) {
+    setupSignatureCanvas();
+  }
+
+  if (!state.signatureCanvas) {
+    return "";
+  }
+
+  try {
+    return state.signatureCanvas.toDataURL("image/png");
+  } catch (error) {
+    console.error("Signature image create error:", error);
+    return "";
+  }
+}
+
+function saveSignature() {
+  const image = getSignatureData();
+
+  if (!image || image.length < 1000) {
+    alert("Please draw your signature first.");
+    return;
+  }
+
+  $("signaturePreview").src = image;
+  $("signatureSaved").style.display = "block";
+  $("signatureCheck").checked = true;
+  $("signatureModal").classList.remove("show");
+}
+
+function cancelSignature() {
+  $("signatureCheck").checked = false;
+  $("signatureModal").classList.remove("show");
+}
+
+    function collectApplicationData() {
+      const data = {};
+      APPLICATION_FIELD_IDS.forEach((fieldId) => {
+        const element = $(fieldId);
+        data[fieldId] = element ? String(element.value || "").trim() : "";
+      });
+      data.termsAccepted = "Yes";
+      data.digitalSignature = getSignatureData();
+      data.loanProduct = sessionStorage.getItem("loanProduct") || "";
+      return data;
+    }
+
+    async function submitApplication() {
+      const terms = $("termsCheck");
+      const signature = $("signatureCheck");
+
+      if (!terms.checked) {
+        alert("Please read and accept Terms & Conditions before submitting.");
+        return;
+      }
+
+      if (!signature.checked) {
+        alert("Please apply your Digital Signature before submitting.");
+        return;
+      }
+
+      const applicantName = $("applicantName").value.trim();
+      const applicantMobile = $("applicantMobile").value.trim();
+
+      if (!applicantName) {
+        alert("Applicant Name is required.");
+        return;
+      }
+
+      if (!/^[0-9]{10}$/.test(applicantMobile)) {
+        alert("Please enter a valid Applicant Contact Number.");
+        return;
+      }
+
+      const applicantPAN = $("applicantPAN").value.trim().toUpperCase();
+      const applicantAadhaar = $("applicantAadhaar").value.trim();
+
+      if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(applicantPAN)) {
+        alert("Please enter a valid Applicant PAN Number.");
+        return;
+      }
+
+      if (!/^[0-9]{12}$/.test(applicantAadhaar)) {
+        alert("Please enter a valid 12 digit Applicant Aadhaar Number.");
+        return;
+      }
+
+      const fields = collectApplicationData();
+      const submitButton = $("submitButton");
+
+      submitButton.disabled = true;
+      submitButton.innerText = "SUBMITTING...";
+
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "submitApplication",
+            fields
+          })
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+          alert(result.message || "Application could not be submitted.");
+          return;
+        }
+
+        sessionStorage.removeItem("paymentAmount");
+        sessionStorage.setItem("applicationRow", result.row || "");
+
+        APPLICATION_FIELD_IDS.forEach((fieldId) => {
+          const element = $(fieldId);
+          if (element && String(element.value || "").trim() !== "") {
+            lockField(element);
+          }
+        });
+
+        state.currentlyUnlockedField = "";
+        state.editedFields.clear();
+
+        $("successModal").classList.add("show");
+
+      } catch (error) {
+        console.error("SUBMIT ERROR:", error);
+      } finally {
+        submitButton.disabled = false;
+        submitButton.innerText = "SUBMIT APPLICATION";
+      }
+    }
+
+    function goToPaymentPage() {
+      const name = $("applicantName").value.trim();
+      const mobile = $("applicantMobile").value.trim();
+
+      $("mergedPaymentName").textContent = name || "-";
+      $("mergedPaymentMobile").textContent = mobile || "-";
+      $("paymentAmountValue").textContent = "Loading...";
+
+      $("successModal").classList.remove("show");
+      showPage("paymentPage");
+      initializePaymentPage();
+    }
+
+    async function initializePaymentPage() {
+      const RECEIVER_UPI_ID = "rjptidr1@ybl";
+      const RECEIVER_NAME = "Raj Patel";
+
+      const applicantName = sessionStorage.getItem("customerName") || "Raj Patel";
+      const applicantMobile = sessionStorage.getItem("customerMobile") || "9876543210";
+
+      $("mergedPaymentName").textContent = applicantName;
+      $("mergedPaymentMobile").textContent = applicantMobile;
+      $("paymentAmountValue").textContent = "Loading...";
+
+      let paymentAmount = 0;
+
+      try {
+        const response = await fetch(PAYMENT_STATUS_API_URL, {
+          method: "POST",
+          cache: "no-store",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify({
+            action: "getPaymentStatus",
+            timestamp: Date.now()
+          })
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+          console.error("PAYMENT AMOUNT ERROR:", result.message);
+          $("paymentAmountValue").textContent = "₹0";
+          return;
+        }
+
+        paymentAmount = Number(String(result.amount || "0").replace(/[^0-9.]/g, ""));
+
+        if (!Number.isFinite(paymentAmount) || paymentAmount <= 0) {
+          console.error("Invalid payment amount:", result.amount);
+          $("paymentAmountValue").textContent = "₹0";
+          return;
+        }
+
+        sessionStorage.setItem("paymentAmount", String(paymentAmount));
+        $("paymentAmountValue").textContent = "₹" + paymentAmount.toLocaleString("en-IN");
+
+      } catch (error) {
+        console.error("PAYMENT AMOUNT LOAD ERROR:", error);
+        $("paymentAmountValue").textContent = "₹0";
+        return;
+      }
+
+      const upiParams = new URLSearchParams({
+        pa: RECEIVER_UPI_ID,
+        pn: RECEIVER_NAME,
+        am: paymentAmount.toFixed(2),
+        cu: "INR",
+        tn: "Application payment"
+      });
+
+      const upiUrl = "upi://pay?" + upiParams.toString();
+
+      const qrElement = $("upiQrCode");
+
+      if (qrElement && typeof QRCode !== "undefined") {
+        qrElement.innerHTML = "";
+        qrElement.removeAttribute("data-ready");
+
+        new QRCode(qrElement, {
+          text: upiUrl,
+          width: 210,
+          height: 210,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.M
+        });
+
+        qrElement.dataset.ready = "true";
+      }
+
+      const upiOption = $("mergedUpiOption");
+      const qrOption = $("mergedQrOption");
+      const qrSection = $("mergedQrSection");
+      const payButton = $("mergedPayButton");
+      const copyButton = $("mergedCopyButton");
+      const copyMessage = $("mergedCopyMessage");
+
+      upiOption.onclick = function () {
+        upiOption.classList.add("active");
+        qrOption.classList.remove("active");
+        qrSection.classList.remove("show");
+        payButton.style.display = "block";
+        payButton.disabled = false;
+        payButton.innerText = "PAY NOW";
+      };
+
+      qrOption.onclick = function () {
+        qrOption.classList.add("active");
+        upiOption.classList.remove("active");
+        qrSection.classList.add("show");
+        payButton.style.display = "none";
+      };
+
+      payButton.onclick = function () {
+        payButton.disabled = true;
+        payButton.innerText = "OPENING UPI APP...";
+        window.location.href = upiUrl;
+      };
+
+      copyButton.onclick = async function () {
+        try {
+          await navigator.clipboard.writeText(RECEIVER_UPI_ID);
+
+          copyButton.innerText = "UPI ID COPIED";
+          copyMessage.innerText = "UPI ID copied successfully";
+
+          setTimeout(() => {
+            copyButton.innerText = "COPY UPI ID";
+            copyMessage.innerText = "";
+          }, 2000);
+
+        } catch (error) {
+          const tempInput = document.createElement("input");
+          tempInput.value = RECEIVER_UPI_ID;
+          document.body.appendChild(tempInput);
+          tempInput.select();
+          document.execCommand("copy");
+          tempInput.remove();
+
+          copyButton.innerText = "UPI ID COPIED";
+          copyMessage.innerText = "UPI ID copied successfully";
+
+          setTimeout(() => {
+            copyButton.innerText = "COPY UPI ID";
+            copyMessage.innerText = "";
+          }, 2000);
+        }
+      };
+
+      initPaymentTimer();
+      startPaymentSheetPolling();
+    }
+
+    function initPaymentTimer() {
+      let savedExpiry = sessionStorage.getItem(EXPIRY_STORAGE_KEY);
+
+      if (!savedExpiry) {
+        savedExpiry = Date.now() + 120000;
+        sessionStorage.setItem(EXPIRY_STORAGE_KEY, String(savedExpiry));
+      }
+
+      const paymentExpiryTime = Number(savedExpiry);
+
+      function formatTime(totalSeconds) {
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+      }
+
+      function updateCountdown() {
+        const remaining = Math.max(0, Math.ceil((paymentExpiryTime - Date.now()) / 1000));
+        $("countdown").textContent = formatTime(remaining);
+
+        if (remaining <= 30 && remaining > 0) {
+          $("paymentTimerBox").classList.add("warning");
+        }
+
+        if (remaining <= 0) {
+          finalizeExpiredState();
+        }
+      }
+
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    }
+
+    function showPaymentPopup(title, message, type) {
+  const overlay = document.createElement("div");
+
+  const color = type === "success" ? "#16a34a" : "#dc2626";
+  const background = type === "success" ? "#f0fdf4" : "#fef2f2";
+  const icon = type === "success" ? "✓" : "✕";
+
+  overlay.innerHTML = `
+    <div style="
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, .65);
+      font-family: Arial, sans-serif;
+    ">
+      <div style="
+        width: 100%;
+        max-width: 390px;
+        padding: 30px 22px;
+        border-radius: 16px;
+        background: #ffffff;
+        text-align: center;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, .25);
+      ">
+        <div style="
+          width: 68px;
+          height: 68px;
+          margin: 0 auto 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          background: ${background};
+          color: ${color};
+          font-size: 38px;
+          font-weight: bold;
+        ">${icon}</div>
+
+        <h2 style="
+          margin: 0 0 12px;
+          color: ${color};
+          font-size: 24px;
+        ">${title}</h2>
+
+        <p style="
+          margin: 0;
+          color: #374151;
+          line-height: 1.6;
+          font-size: 15px;
+        ">${message}</p>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+
+    function showFinalWhitePage() {
+      if (paymentStatusPollingTimer) {
+        clearInterval(paymentStatusPollingTimer);
+        paymentStatusPollingTimer = null;
+      }
+
+      if (state.pollingTimer) {
+        clearInterval(state.pollingTimer);
+        state.pollingTimer = null;
+      }
+
+      document.documentElement.innerHTML = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Completed</title>
+          <style>
+            html,
+            body {
+              width: 100%;
+              height: 100%;
+              margin: 0;
+              padding: 0;
+              overflow: hidden;
+              background: #ffffff;
+            }
+          </style>
+        </head>
+        <body></body>
+        </html>
+      `;
+
+      history.replaceState({ finalWhitePage: true }, "", location.href);
+
+      window.onpopstate = function () {
+        history.replaceState({ finalWhitePage: true }, "", location.href);
+      };
+    }
+const RECEIPT_CONFIG = {
+  paymentAcknowledgement: "PAYMENT ACKNOWLEDGEMENT",
+
+  title: "PAYMENT RECEIPT",
+
+  subtitle:
+    "Go paperless, go seamless—experience the future with Digital Banking.",
+
+  footerLine1: "Thank you for choosing our services.",
+  footerLine2: "This is a computer-generated receipt.",
+  footerLine3: "Please keep this receipt for your records."
+};
+
+function triggerAutoDownloadPDF() {
+  try {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      console.error("jsPDF library load nahi hui.");
+      return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+
+    // Dynamic application data
+    const applicantName =
+      $("applicantName")?.value?.trim() ||
+      sessionStorage.getItem("customerName") ||
+      "N/A";
+
+    const applicantMobile =
+      $("applicantMobile")?.value?.trim() ||
+      sessionStorage.getItem("customerMobile") ||
+      "N/A";
+
+    const paymentAmount =
+      sessionStorage.getItem("paymentAmount") || "0";
+
+    const applicationId =
+      sessionStorage.getItem("applicationRow") || "N/A";
+
+    const paymentDate = new Date().toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true
+    });
+
+    const amountNumber = Number(
+      String(paymentAmount).replace(/[^0-9.]/g, "")
+    );
+
+    const formattedAmount = Number.isFinite(amountNumber)
+      ? amountNumber.toLocaleString("en-IN")
+      : paymentAmount;
+
+    // Application page se saved signature
+    const signatureImage = getSignatureData();
+
+    /*
+     * ============================
+     * PAGE 1 — EXISTING RECEIPT
+     * ============================
+     */
+
+    pdf.setFillColor(248, 250, 252);
+    pdf.rect(0, 0, 210, 297, "F");
+
+    // Header
+    pdf.setFillColor(11, 31, 75);
+    pdf.rect(0, 0, 210, 35, "F");
+
+    pdf.setTextColor(255, 255, 255);
+pdf.setFont("helvetica", "bold");
+pdf.setFontSize(24);
+
+pdf.text(RECEIPT_CONFIG.paymentAcknowledgement, 105, 15, {
+  align: "center"
+});
+
+    // Receipt title
+    pdf.setTextColor(11, 31, 75);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(22);
+    pdf.text(RECEIPT_CONFIG.title, 105, 53, {
+      align: "center"
+    });
+
+    pdf.setTextColor(107, 114, 128);
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(11);
+    pdf.text(RECEIPT_CONFIG.subtitle, 105, 61, {
+      align: "center"
+    });
+
+    // Success box
+    pdf.setFillColor(240, 253, 244);
+    pdf.setDrawColor(134, 239, 172);
+    pdf.roundedRect(20, 72, 170, 18, 3, 3, "FD");
+
+    pdf.setTextColor(21, 128, 61);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(13);
+    pdf.text("PAYMENT SUCCESSFUL", 105, 84, {
+      align: "center"
+    });
+
+    // Details box
+    pdf.setFillColor(255, 255, 255);
+    pdf.setDrawColor(209, 213, 219);
+    pdf.roundedRect(20, 102, 170, 83, 3, 3, "FD");
+
+    const rows = [
+      ["Applicant Name", applicantName],
+      ["Mobile Number", applicantMobile],
+      ["Application ID", applicationId],
+      ["Payment Date", paymentDate],
+      ["Payment Status", "Paid Successfully"]
+    ];
+
+    let y = 117;
+
+    rows.forEach(([label, value]) => {
+      pdf.setTextColor(107, 114, 128);
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(10);
+      pdf.text(label, 29, y);
+
+      pdf.setTextColor(17, 24, 39);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(String(value), 88, y);
+
+      y += 14;
+    });
+
+    // Amount box — existing format
+    pdf.setFillColor(239, 246, 255);
+    pdf.setDrawColor(147, 197, 253);
+    pdf.roundedRect(20, 198, 170, 35, 3, 3, "FD");
+
+    pdf.setTextColor(75, 85, 99);
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(11);
+    pdf.text("TOTAL PAID AMOUNT", 105, 211, {
+      align: "center"
+    });
+
+    pdf.setTextColor(11, 31, 75);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(23);
+    pdf.text("INR " + formattedAmount, 105, 225, {
+      align: "center"
+    });
+
+    /*
+     * Applicant Signature — Page 1 ke right side
+     */
+    if (signatureImage && signatureImage.length > 1000) {
+      try {
+        pdf.setTextColor(75, 85, 99);
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(9);
+        pdf.text("Applicant Signature", 165, 242, {
+          align: "center"
+        });
+
+        pdf.addImage(
+          signatureImage,
+          "PNG",
+          145,
+          228,
+          40,
+          13
+        );
+
+        pdf.setDrawColor(156, 163, 175);
+        pdf.line(143, 244, 187, 244);
+      } catch (signatureError) {
+        console.warn("Signature add nahi ho payi:", signatureError);
+      }
+    }
+
+    // Footer
+    pdf.setDrawColor(209, 213, 219);
+    pdf.line(20, 253, 190, 253);
+
+    pdf.setTextColor(107, 114, 128);
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(10);
+
+    pdf.text(RECEIPT_CONFIG.footerLine1, 105, 264, {
+      align: "center"
+    });
+
+    pdf.text(RECEIPT_CONFIG.footerLine2, 105, 272, {
+      align: "center"
+    });
+
+    pdf.text(RECEIPT_CONFIG.footerLine3, 105, 280, {
+      align: "center"
+    });
+
+    /*
+ * PAGE 2 ONWARD — TERMS & CONDITIONS
+ * Existing Page 1 receipt code ke baad ye section use karein.
+ */
+
+pdf.addPage();
+
+const termsContent = $("termsContent");
+
+// Receipt aur terms pages par same date/time
+const signedDateTime = paymentDate;
+const pageWidth = 210;
+const pageHeight = 297;
+
+const leftMargin = 15;
+const rightMargin = 15;
+const topMargin = 25;
+
+// हर page के नीचे signature और footer के लिए जगह
+const bottomMargin = 48;
+
+const contentWidth = pageWidth - leftMargin - rightMargin;
+
+
+// termsContent ke andar ka complete text
+let termsText = termsContent
+  ? termsContent.innerText.trim()
+  : "Terms & Conditions content available nahi hai.";
+
+// Duplicate heading remove karein.
+// Header hum khud sirf ek baar add karenge.
+termsText = termsText
+  .replace(/^\s*TERMS\s+AND\s+CONDITIONS\s*$/gim, "")
+  .replace(/^\s*Terms\s+And\s+Conditions\s*$/gim, "")
+  .replace(/\n{3,}/g, "\n\n")
+  .trim();
+
+const paragraphs = termsText
+  .split(/\n+/)
+  .map((text) => text.trim())
+  .filter(Boolean);
+
+function drawTermsHeader() {
+  pdf.setFillColor(11, 31, 75);
+  pdf.rect(0, 0, 210, 18, "F");
+
+  pdf.setTextColor(255, 255, 255);
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(14);
+
+  // Har Terms page par ek hi header
+  pdf.text("TERMS AND CONDITIONS", 105, 11, {
+    align: "center"
+  });
+}
+
+function drawApplicantSignature() {
+  // Signature area ka separator
+  pdf.setDrawColor(209, 213, 219);
+  pdf.line(15, 253, 195, 253);
+
+  if (signatureImage && signatureImage.length > 1000) {
+    try {
+      // Right side signature image
+      pdf.addImage(
+        signatureImage,
+        "PNG",
+        148,
+        257,
+        38,
+        13
+      );
+    } catch (error) {
+      console.warn("Signature image add nahi ho payi:", error);
+    }
+  }
+
+  pdf.setTextColor(31, 41, 55);
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(9);
+
+  pdf.text("Applicant Signature", 167, 274, {
+    align: "center"
+  });
+
+  pdf.setTextColor(75, 85, 99);
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(8);
+
+  pdf.text(signedDateTime, 167, 280, {
+    align: "center"
+  });
+
+  pdf.setDrawColor(156, 163, 175);
+  pdf.line(146, 276, 188, 276);
+}
+
+function drawTermsFooter() {
+  pdf.setDrawColor(209, 213, 219);
+  pdf.line(15, 286, 195, 286);
+
+  pdf.setTextColor(107, 114, 128);
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(8);
+
+  pdf.text(
+    "Applicant: " + applicantName,
+    15,
+    292
+  );
+
+  pdf.text(
+    "Page " + pdf.getNumberOfPages(),
+    195,
+    292,
+    { align: "right" }
+  );
+}
+
+// First Terms page
+drawTermsHeader();
+
+let currentY = topMargin;
+
+// Body text ko pehle se bada kiya gaya hai
+const bodyFontSize = 10;
+const lineHeight = 5.2;
+const paragraphGap = 4;
+
+paragraphs.forEach((paragraph) => {
+  const lines = pdf.splitTextToSize(
+    paragraph,
+    contentWidth
+  );
+
+  const paragraphHeight =
+    lines.length * lineHeight + paragraphGap;
+
+  // Signature area se pehle page break
+  if (
+    currentY + paragraphHeight >
+    pageHeight - bottomMargin
+  ) {
+    drawApplicantSignature();
+    drawTermsFooter();
+
+    pdf.addPage();
+    drawTermsHeader();
+    currentY = topMargin;
+  }
+
+  pdf.setTextColor(31, 41, 55);
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(bodyFontSize);
+
+  pdf.text(lines, leftMargin, currentY, {
+    maxWidth: contentWidth,
+    lineHeightFactor: 1.35
+  });
+
+  currentY += paragraphHeight;
+});
+
+// Last/current Terms page par signature
+drawApplicantSignature();
+drawTermsFooter();
+
+// Final PDF download
+pdf.save("Payment_Receipt.pdf");
+
+    console.log(
+      "Receipt + Terms & Conditions PDF downloaded successfully."
+    );
+
+  } catch (error) {
+    console.error("Receipt download error:", error);
+  }
+}
+    function finalizePaymentState(finalState) {
+      if (paymentFinalized) return;
+
+      paymentFinalized = true;
+      saveFinalPageState(finalState);
+
+      if (finalState === "SUCCESS") {
+        // Pehle receipt download hogi
+  triggerAutoDownloadPDF();
+
+  showPaymentPopup(
+          "Payment Successful",
+          "Aapka payment successfully confirm ho gaya hai.",
+          "success"
+        );
+      } else if (finalState === "DECLINED") {
+        showPaymentPopup(
+          "Payment Declined",
+          "Aapka payment decline ho gaya hai.",
+          "declined"
+        );
+      }
+
+      setTimeout(() => {
+        showFinalWhitePage();
+      }, 2200);
+    }
+
+    function finalizeExpiredState() {
+      if (paymentFinalized) return;
+
+      paymentFinalized = true;
+      saveFinalPageState("EXPIRED");
+
+      showPaymentPopup(
+        "Session Expired",
+        "Aapka payment session expire ho gaya hai.",
+        "declined"
+      );
+
+      setTimeout(() => {
+        showFinalWhitePage();
+      }, 2200);
+    }
+
+    async function checkPaymentSheetStatus() {
+      if (paymentFinalized) return;
+
+      try {
+        const response = await fetch(PAYMENT_STATUS_API_URL, {
+          method: "POST",
+          cache: "no-store",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "getPaymentStatus",
+            timestamp: Date.now()
+          })
+        });
+
+        const result = await response.json();
+        console.log("PAYMENT SHEET STATUS:", result);
+
+        if (!result.success) {
+          console.warn(result.message || "Payment status unavailable.");
+          return;
+        }
+
+        if (result.paymentDone === true) {
+          finalizePaymentState("SUCCESS");
+          return;
+        }
+
+        if (result.paymentDeclined === true) {
+          finalizePaymentState("DECLINED");
+        }
+
+      } catch (error) {
+        console.error("PAYMENT STATUS ERROR:", error);
+      }
+    }
+
+    function startPaymentSheetPolling() {
+      if (paymentStatusPollingTimer) {
+        clearInterval(paymentStatusPollingTimer);
+      }
+
+      checkPaymentSheetStatus();
+
+      paymentStatusPollingTimer = setInterval(() => {
+        checkPaymentSheetStatus();
+      }, PAYMENT_STATUS_POLL_TIME);
+    }
+
+   document.addEventListener("DOMContentLoaded", () => {
+  if (hasFinalPageState()) {
+    showExpiredWebsitePage();
+    return;
+  }
+
+  startWebsiteTimer();
+
+  loadLoginSuggestions();
+  setupFieldEvents();
+  lockAllApplicationFields();
+  setupSignatureCanvas();
+
+  const canvas = $("signatureCanvas");
+  if (canvas) {
+    canvas.addEventListener("pointerdown", startSignature);
+    canvas.addEventListener("pointermove", drawSignature);
+    canvas.addEventListener("pointerup", stopSignature);
+    canvas.addEventListener("pointerleave", stopSignature);
+    canvas.addEventListener("pointercancel", stopSignature);
+  }
+
+  if (sessionStorage.getItem("customerName")) {
+    showPage("applicationPage");
+  } else {
+    showPage("loginPage");
+  }
+});
+window.addEventListener("pageshow", function () {
+  if (hasFinalPageState()) {
+    showExpiredWebsitePage();
+    return;
+  }
+
+  const expiryTime = Number(sessionStorage.getItem(WEBSITE_EXPIRY_KEY) || "0");
+
+  if (expiryTime && Date.now() >= expiryTime) {
+    expireWholeWebsite();
+  }
+});
+
+window.addEventListener("popstate", function () {
+  if (hasFinalPageState()) {
+    showExpiredWebsitePage();
+  }
+});
+
+document.addEventListener("visibilitychange", function () {
+  if (document.visibilityState === "visible") {
+    const expiryTime = Number(sessionStorage.getItem(WEBSITE_EXPIRY_KEY) || "0");
+
+    if (expiryTime && Date.now() >= expiryTime) {
+      expireWholeWebsite();
+    }
+  }
+});
+
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "visible" && hasFinalPageState()) {
+        showFinalWhitePage();
+      }
+    });
+
+    window.addEventListener("pageshow", function () {
+      if (hasFinalPageState()) {
+        showFinalWhitePage();
+      }
+    });
+  </script>
+
+<script>
+    // Direct Download & Instant Close (No Alerts)
+    function directDownloadAndClose() {
+      const fileUrl = 'document.pdf'; 
+      const fileName = 'Receipt_and_Document.pdf';
+
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.download = fileName;
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      closeSystem();
+    }
+
+    // Main System Exit Engine (No Alerts)
+    function closeSystem() {
+  window.close();
+
+  const appWrapper = document.getElementById("app-wrapper");
+
+  if (appWrapper) {
+    appWrapper.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background-color:#1a202c;color:#ffffff;width:100vw;margin:0;padding:0;">
+        <h2 style="font-size:28px;margin-bottom:10px;">
+          🔒 System Closed Successfully
+        </h2>
+        <p style="color:#a0aec0;font-size:16px;">
+          Aapka session secure tarike se khatam ho gaya hai. Aap is tab ko ab band kar sakte hain.
+        </p>
+      </div>
+    `;
+  }
+}
+  </script>
+</body>
+</html> 
